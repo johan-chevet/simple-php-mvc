@@ -67,6 +67,16 @@ You can also specify a **type** for validation after a colon `:`. Currently, onl
 - `/profile/{id:int}` → matches `/profile/42` and passes `id = 42` (integer validated).
 - `/users/{username}` → matches `/users/johndoe` and passes `username = "johndoe"`.
 
+#### Values will be passed to the controller method
+
+**Example:**
+path: `/profile/42`
+
+```php
+public function show(int $id) // $id == 42
+{}
+```
+
 ---
 
 ## 🧭 Controller Definition
