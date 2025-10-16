@@ -83,7 +83,7 @@ class Router
             return call_user_func_array([$controller, $method], $params);
         };
 
-        $middlewares = array_reverse($route['middleware'] ?? []);
+        $middlewares = array_reverse($route['middlewares'] ?? []);
         $next = $controller_function;
 
         foreach ($middlewares as $middleware) {
