@@ -69,6 +69,10 @@ class Model
         $class = get_called_class();
         $model = new $class();
         $data = $stmt->fetch();
+
+        if (!$data) {
+            return false;
+        }
         foreach ($data as $property => $value) {
             if (property_exists($model, $property)) {
                 $rp = new ReflectionProperty($model, $property);
