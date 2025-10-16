@@ -13,7 +13,7 @@ class Controller
     {
         $this->request = $request;
     }
-    public function render(string $view, array $data = []): string
+    public function render(string $view, array $data = []): Response
     {
         $viewFile = VIEW_PATH . "/$view.php";
 
@@ -29,7 +29,8 @@ class Controller
             return ob_get_clean();
         };
 
-        return $render($viewFile, $data);
+        $response = new Response();
+        return $response->body($render($viewFile, $data));
     }
 
     public function render_with_layout(
@@ -37,21 +38,16 @@ class Controller
         array $data = [],
         string $layout = 'layouts/layout'
     ): Response {
-        $content = $this->render($view, $data);
+        $response = $this->render($view, $data);
 
         // Merge content into layout data
-        $layoutData = array_merge($data, ['content' => $content]);
+        $layoutData = array_merge($data, ['content' => $response->get_body()]);
         $layoutFile = VIEW_PATH . "/$layout.php";
 
         if (!file_exists($layoutFile)) {
             throw new \RuntimeException("Layout file '$layoutFile' not found.");
         }
 
-        $layoutHtml = $this->render($layout, $layoutData);
-
-        $response = new Response();
-        $response->body($layoutHtml);
-
-        return $response;
+        return $this->render($layout, $layoutData);
     }
 }

@@ -160,22 +160,13 @@ public function index()
 
 Model classes should extend from the **base Model class** to gain basic SQL methods like `save`, `delete`, and `find_by_id`.
 
-- By default, the table name is the plural of the class name. You can override it by defining `$table_name`.
+- The table name must be the plural of the class name. No other way for the moment.
 
 **Example (`users` table name):**
 
 ```php
 class User extends Model
 {}
-```
-
-**Example (`app_users` table name):**
-
-```php
-class User extends Model
-{
-    protected static string $table_name = "app_users";
-}
 ```
 
 ---

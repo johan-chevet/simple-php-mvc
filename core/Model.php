@@ -3,19 +3,16 @@
 namespace Core;
 
 use DateTime;
+use ReflectionProperty;
 
 class Model
 {
-    protected static string $table_name;
     public ?int $id;
 
     protected static function get_table_name(): string
     {
-        if (empty(static::$table_name)) {
-            $class_name = str_replace('\\', '/', get_called_class());
-            static::$table_name = strtolower(basename($class_name)) . 's';
-        }
-        return static::$table_name;
+        $class_name = str_replace('\\', '/', get_called_class());
+        return strtolower(basename($class_name)) . 's';
     }
 
     public function save(): void
@@ -69,7 +66,19 @@ class Model
         $sql = "SELECT * FROM " . static::get_table_name() . " WHERE id = ?";
         $stmt = Database::pdo()->prepare($sql);
         $stmt->execute([$id]);
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, get_called_class());
-        return $stmt->fetch();
+        $class = get_called_class();
+        $model = new $class();
+        $data = $stmt->fetch();
+        foreach ($data as $property => $value) {
+            if (property_exists($model, $property)) {
+                $rp = new ReflectionProperty($model, $property);
+                if ($rp->getType()->__tostring() === 'DateTime') {
+                    $model->$property = new DateTime($value);
+                } else {
+                    $model->$property = $value;
+                }
+            }
+        }
+        return $model;
     }
 }
